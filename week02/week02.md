@@ -42,7 +42,7 @@
 ## 数据类型
 ### Number
 JS中的Number，采用IEEE-754 双进度表示，如下图：<br>
-![image][https://github.com/yangjie8421/Frontend-02-Template/blob/master/week02/IEEE-754.png]
+![Image text](https://github.com/yangjie8421/Frontend-02-Template/blob/master/week02/IEEE-754.png)
 
 1. M = 2<sup>-1</sup> + 2<sup>-2</sup>+ 2<sup>-3</sup>+....+2<sup>-52</sup> <br>
 2. IEEE754并不能准确的反应小数的精度（0.1+0.2 不等于0.3)，在实际使用的时候要注意
