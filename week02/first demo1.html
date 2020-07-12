@@ -1,0 +1,529 @@
+<html>
+
+<body>
+    <!-- <input type="button" title="点我11"></input> -->
+    <div id="traffic-light" style="width: 100px;height: 50x;">红绿灯</div>
+</body>
+<script>
+
+    var unicode2utf8 = function (str) {
+
+        var bytes = new Array();
+        var len, c;
+        len = str.length;
+
+        for (var i = 0; i < len; i++) {
+            c = str.charCodeAt(i);
+
+            if (c >= 0x010000 && c <= 0x10FFFF) {
+                /*
+                1111 0XXX,10XX XXXX,10XX XXXX,10XX XXXX
+                */
+                bytes.push(((c >> 18) & 0x07) | 0xF0);
+                bytes.push(((c >> 12) & 0x3F) | 0x80);
+                bytes.push(((c >> 6) & 0x3F) | 0x80);
+                bytes.push((c & 0x3F) | 0x80);
+            } else if (c >= 0x000800 && c <= 0x00FFFF) {
+                /*
+                1110 XXXX，10XX XXXX，10XX XXXX
+                */
+                bytes.push(((c >> 12) & 0x0F) | 0xE0);
+                bytes.push(((c >> 6) & 0x3F) | 0x80);
+                bytes.push((c & 0x3F) | 0x80);
+            } else if (c >= 0x000080 && c <= 0x0007FF) {
+                /*
+                110X XXXX，10XX XXXX
+                */
+                bytes.push(((c >> 6) & 0x1F) | 0xC0);
+                bytes.push((c & 0x3F) | 0x80);
+            } else {
+                //0XXX XXXX
+                bytes.push(c & 0xFF);
+            }
+        }
+        return bytes;
+    };
+
+    var utf82unicode = function (arr) {
+        var str = '';
+
+        console.log("length="+arr.length)
+
+        if (arr.length == 4) {
+            /*
+            1111 0XXX,10XX XXXX,10XX XXXX,10XX XXXX
+            */
+            str += arr[0].toString(2).slice(5, 8);
+            str += arr[1].toString(2).slice(2, 8);
+            str += arr[2].toString(2).slice(2, 8);
+            str += arr[3].toString(2).slice(2, 8);
+        } else if (arr.length == 3) {
+            /*
+           1110 XXXX，10XX XXXX，10XX XXXX
+           */
+            str += arr[0].toString(2).slice(4, 8);
+            str += arr[1].toString(2).slice(2, 8);
+            str += arr[2].toString(2).slice(2, 8);
+        } else if (arr.length == 2) {
+            /*
+            110X XXXX，10XX XXXX
+            */
+            str += arr[0].toString(2).slice(3, 8);
+            str += arr[1].toString(2).slice(2, 8);
+        } else {
+            str = arr[0].toString(2);
+        }
+        return parseInt(str,2).toString();
+    }
+
+    var utf82unicode2 = function (arr) {
+        if (typeof arr === 'string') {
+            return arr;
+        }
+
+        var str = '';
+        var _arr = arr;
+
+        for (var i = 0; i < _arr.length; i++) {
+
+            var one = _arr[i].toString(2),
+                v = one.match(/^1+?(?=0)/);
+
+            if (v && one.length == 8) {
+                var bytesLength = v[0].length;
+
+                var store = _arr[i].toString(2).slice(7 - bytesLength);
+
+                for (var st = 1; st < bytesLength; st++) {
+                    store += _arr[st + i].toString(2).slice(2);
+                }
+
+                str += String.fromCharCode(parseInt(store, 2));
+                i += bytesLength - 1;
+            } else {
+                str += String.fromCharCode(_arr[i]);
+            }
+        }
+        return str;
+    }
+
+    var str = "￿";
+
+    console.log(str.charCodeAt(0).toString(2)+ ","+str.charCodeAt(0).toString(2).length);
+    var uni = utf82unicode2(unicode2utf8(str));
+    console.log("str is："+String.fromCharCode(uni));
+    console.log(uni.toString(2));
+
+    // console.log(utf82unicode(unicode2utf8("严")))
+    // var str1 = "中";
+    // var bytes = new Array();
+
+    // var codePoint = str1.charCodeAt(0);
+
+    // if ((0x000000 <= codePoint) && (codePoint <= 0x00007F)){
+    //     bytes.push(codePoint);
+    // }
+    // else if ((0x000080<=codePoint) && (codePoint <= 0x0007FF)){
+    //     console.log("2");
+    //     bytes.push(((codePoint >> 6) & 0x1F) | 0xC0);
+	// 	bytes.push((codePoint & 0x3F) | 0x80);
+    // } 
+    // else if ((0x000800<=codePoint) && (codePoint <= 0x00FFFF)){
+    //     console.log("3");
+    //     bytes.push(((codePoint >> 12) & 0x0F) | 0xE0);
+    //     bytes.push(((codePoint >> 6) & 0x3F) | 0x80);
+    //     bytes.push((codePoint & 0x3F) | 0x80);
+    // }
+    // else if ((0x010000<=codePoint) && (codePoint<=0x10FFFF)){
+    //     console.log("4");
+    //     bytes.push(((codePoint >> 18) & 0x07) | 0xF0);
+    //     bytes.push(((codePoint >> 12) & 0x3F) | 0x80);
+    //     bytes.push(((codePoint >> 6) & 0x3F) | 0x80);
+    //     bytes.push((codePoint & 0x3F) | 0x80);
+    // }
+    // else {
+    //     console.log('无效字符');
+    // }
+
+    // console.log(bytes.toString(2));
+
+
+    // var b;
+    // void function () {
+    //     var env = { b: 1 };
+    //     b = 2;
+    //     console.log("In function b:", b);
+    //     with (env) {
+    //         var b = 3;
+    //         console.log("In with b:", b);
+    //     }
+    // }();
+    // console.log("Global b:", b);
+
+    // function takeLongTime(val) {
+    //     return new Promise((resolve, reject) => {
+    //         if (val) {
+    //             resolve("success");
+    //             // return "success";
+    //         } else {
+    //             reject("failed");
+    //             // return "failed";
+    //         }
+    //     })
+    // }
+
+    // takeLongTime(false).then((result)=>{
+    //     // console.log("1111111")
+    //     console.log(result);
+    // }).catch((result)=>{
+    //     // console.log("222222222222222")
+    //     console.log(result);
+    // })
+
+    // 1.定义一个或多个普通函数，函数必须返回Promise对象，如果返回其他类型的数据，将按照普通同步程序处理
+
+    // function log(flag, time) {
+    //     return new Promise((resolve, reject) => {
+    //         // console.log("invoke:" + time);
+    //         if (flag) {
+    //             setTimeout(function () {
+    //                 console.log(time)
+    //                 resolve("success")
+    //             }, time)
+    //         }
+    //         else {
+    //             reject("failed")
+    //         }
+    //     })
+    // }
+
+    // async function fun() {
+    //     await log(true, 500).then((result) => {
+    //         console.log(result);
+    //     }).catch((result) => {
+    //         console.log(result);
+    //     });
+
+    //     await log(false, 500).then((result) => {
+    //         console.log(result);
+    //     }).catch((result) => {
+    //         console.log(result);
+    //     });
+    // }
+
+    // fun()
+
+    // function takeLongTime(n) {
+    //     return new Promise(resolve => {
+    //         setTimeout(() => resolve(n + 200), n);
+    //     });
+    // }
+
+    // function step1(n) {
+    //     console.log(`step1 with ${n}`);
+    //     return takeLongTime(n);
+    // }
+
+    // function step2(n) {
+    //     console.log(`step2 with ${n}`);
+    //     return takeLongTime(n);
+    // }
+
+    // function step3(n) {
+    //     console.log(`step3 with ${n}`);
+    //     return takeLongTime(n);
+    // }
+
+    // // // Promise方式
+    // function doIt() {
+    //     console.time("doIt");
+    //     const time1 = 300;
+    //     step1(time1)
+    //         .then(time2 => step2(time2))
+    //         .then(time3 => step3(time3))
+    //         .then(result => {
+    //             console.log(`result is ${result}`);
+    //             console.timeEnd("doIt");
+    //         });
+    // }
+
+    // doIt();
+
+    // async await方式
+    // async function doIt() {
+    //     console.time("doIt");
+    //     const time1 = 300;
+    //     const time2 = await step1(time1);
+    //     const time3 = await step2(time2);
+    //     const result = await step3(time3);
+    //     console.log(`result is ${result}`);
+    //     console.timeEnd("doIt");
+    // }
+    // doIt();
+    // async function timeout1(flag) {
+    //     if (flag) {
+    //         return "hello world";
+    //     } else {
+    //         throw new Error("error!!");
+    //     }
+    // }
+
+    // console.log(timeout1(true));
+    // console.log(timeout1(false));
+// Promise {<resolved>: "hello world"}
+// Promise {<rejected>: Error: error!!...}
+
+    // async function timeout() {
+    //     return "helloworld";
+    // }
+
+    // var result = timeout();
+
+    // result.then((result) => {
+    //     console.log(result)
+    // })
+
+    // console.log(timeout());
+    // console.log("我在异步函数后面，会先执行谁呢");
+// Promise { 'helloworld' }
+// 我在异步函数后面，会先执行谁呢
+
+    // function sleep(duration) {
+    //     return new Promise(function (resolve) {
+    //         setTimeout(resolve, duration);
+    //     })
+    // }
+
+    // async function changeColor(duration, color) {
+    //     document.getElementById("traffic-light").style.background = color;
+    //     await sleep(duration);
+    // }
+
+    // async function main() {
+    //     while (true) {
+    //         await changeColor(3000, "green");
+    //         await changeColor(1000, "yellow");
+    //         await changeColor(2000, "red");
+    //     }
+    // }
+    // main()
+    // var r = new Promise(function(resolve, reject){
+    //     console.log("a");
+    //     resolve()
+    // });
+
+    // r.then(() => console.log("c"));
+
+    // console.log("b")
+
+//     var set = new Set();
+//     var objects = [
+//         eval,
+//         isFinite,
+//         isNaN,
+//         parseFloat,
+//         parseInt,
+//         decodeURI,
+//         decodeURIComponent,
+//         encodeURI,
+//         encodeURIComponent,
+//         Array,
+//         Date,
+//         RegExp,
+//         Promise,
+//         Proxy,
+//         Map,
+//         WeakMap,
+//         Set,
+//         WeakSet,
+//         Function,
+//         Boolean,
+//         String,
+//         Number,
+//         Symbol,
+//         Object,
+//         Error,
+//         EvalError,
+//         RangeError,
+//         ReferenceError,
+//         SyntaxError,
+//         TypeError,
+//         URIError,
+//         ArrayBuffer,
+//         SharedArrayBuffer,
+//         DataView,
+//         Float32Array,
+//         Float64Array,
+//         Int8Array,
+//         Int16Array,
+//         Int32Array,
+//         Uint8Array,
+//         Uint16Array,
+//         Uint32Array,
+//         Uint8ClampedArray,
+//         Atomics,
+//         JSON,
+//         Math,
+//         Reflect];
+
+//     objects.forEach(o => set.add(o));
+
+//     for (var i = 0; i < objects.length; i++) {
+//         var o = objects[i]
+//         for (var p of Object.getOwnPropertyNames(o)) {
+//             var d = Object.getOwnPropertyDescriptor(o, p)
+//             if ((d.value !== null && typeof d.value === "object") || (typeof d.value === "function"))
+//                 if (!set.has(d.value))
+//                     set.add(d.value), objects.push(d.value);
+//             if (d.get)
+//                 if (!set.has(d.get))
+//                     set.add(d.get), objects.push(d.get);
+//             if (d.set)
+//                 if (!set.has(d.set))
+//                     set.add(d.set), objects.push(d.set);
+//         }
+//     }
+
+// console.log(set)
+    // function f() {
+    //     console.log("1111111")
+    //     return 1;
+    // }
+    // var v = f(); //把f作为函数调用
+    // console.log(v);
+
+    // var o = new f(); //把f作为构造器调用
+    // console.log(o);
+
+    // class Person {
+    //     constructor(name, age, sex) {
+    //         this.name = name;
+    //         this.age = age;
+    //         this.sex = sex;
+    //     }
+
+    //     get name(){
+    //         return this.name;
+    //     }
+
+    //     set name(name1){
+    //         this.name = name1;
+    //     }
+    // };
+
+    // class Dog {
+    //     bite(obj) {
+    //         console.log("bite" + JSON.stringify(obj))
+    //     }
+    // };
+
+    // var persion = new Person("yang", 18, "男");
+
+    // persion.name;
+
+
+    // var dog = new Dog();
+
+    // console.log(Person.prototype);
+
+    // console.log(persion);
+    // dog.bite(persion)
+
+    // let s1 = Symbol("demo")
+    // let s2 = Symbol("demo");
+
+    // console.log(s1);
+    // console.log(s2);
+
+    // console.log("type of symbol：" + typeof (s1));
+
+    // if (s1 === s2) {
+    //     console.log("equal")
+    // }
+
+    // let obj = {
+    //     [Symbol('name')]: '一斤代码',
+    //     age: 18,
+    //     title: 'Engineer'
+    // }
+
+    // Object.keys(obj)   // ['age', 'title']
+
+    // for (let p in obj) {
+    //     console.log(p)   // 分别会输出：'age' 和 'title'
+    // }
+
+    // Object.getOwnPropertyNames(obj)   // ['age', 'title']
+    // for (let p in obj) {
+    //     console.log(p)   // 分别会输出：'age' 和 'title'
+    // }
+
+    // console.log(JSON.stringify(obj))  // {"age":18,"title":"Engineer"}
+
+    // const obj = {};
+    // const sym = Symbol();
+    // obj[sym] = "foo";
+    // obj.bar = "bar";
+    // console.log(obj); // { bar: 'bar' }
+    // console.log(sym in obj); // true
+    // console.log(obj[sym]); // foo
+    // console.log(Object.keys(obj)); // ['bar']
+
+    // var intVal;
+    // var nullVal = null;
+    // var dobuleVal = 1 / 2;
+
+
+    // if (intVal === undefined) {
+    //     console.log("1111111")
+    // }
+
+    // console.log(dobuleVal);
+    // console.log(intVal);
+    // if (intVal === void 0) {
+    //     console.log("undefined value")
+    // }
+
+    // if (intVal === void 0) {
+    //     console.log("undefined value111")
+    // }
+
+    // console.log(nullVal);
+
+    // console.log(0.1 + 0.2 === 0.3);
+    // console.log(Math.abs(0.1 + 0.2 - 0.3) <= Number.EPSILON);
+
+    // var obj = {
+    //     a: "1234",
+    //     b: 124,
+    //     fullName: function () {
+    //         return this.a + " " + this.b;
+    //     },
+    // }
+
+    // obj.c = "12";
+
+    // console.log(obj);
+
+    // console.log(obj.fullName())
+
+    // obj = null;
+
+    // var mySymbol = Symbol("my symbol");
+
+    // var o = new Object
+    // o[Symbol.iterator] = function() {
+    //     var v = 0
+    //     return {
+    //         next: function() {
+    //             return { value: v++, done: v > 10 }
+    //         }
+    //     }        
+    // };
+
+    // for(var v of o) 
+    //     console.log(v); // 0 1 2 3 ... 9
+
+</script>
+
+</html>
