@@ -40,6 +40,8 @@
     - 命令型语言： C++、C、Java、C#、Python、Ruby、Perl、T-SQL、JavaScript <br>
 # Javascript基础
 ## 数据类型
+### 基本数据类型
+    JS共Number、String、Boolean、Null、undefined、object、symbol
 ### Number
 JS中的Number，采用IEEE-754 双进度表示，如下图：<br>
 ![Image text](https://github.com/yangjie8421/Frontend-02-Template/blob/master/week02/IEEE-754.png)
