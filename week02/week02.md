@@ -61,15 +61,15 @@ JS中的Number，采用IEEE-754 双进度表示，如下图：<br>
         | 0800 ~FFFF     | 1110 XXXX 10XX XXXX 10XX XXXX      | 
         | 10000 ~1FFFFF  | 11110XXX 10XXXXXX 10XXXXXX 10XXXXXX     | 
 
-### 对象
-#### 对象的分类
+## 对象
+### 对象的分类
 - 宿主对象: 由JavaScript宿主环境提供的对象，行为由宿主环境决定,简单来说就是用户的机器环境，包括操作系统和浏览器.
 - 固有（内置）对象：ECMAScript规范中要求实现的一些函数和对象，具体包括Object,Function,Number,Boolean,Array,String,RegExp,Error,Date,Global,Math.
 - 原生对象：
 - 普通对象：由我们创建的那些对象
 ### 函数对象
 函数是第一类对象（first-class object），被称为一等公民。函数与对象共存，我们也可以认为函数就是其他任意类的对象。由此可见，对象有的功能，函数也会拥有.
-### Symbol
+### Symbol对象
 - 特性
     - Symbol是一个基础数据类型（primitive type）。
     - 每个Symbol实例都是唯一的。因此，当你比较两个Symbol实例的时候，将总会返回false
