@@ -43,7 +43,7 @@ ${Object.keys(this.headers).map(key => `${key}:${this.headers[key]}`).join('\r\n
                 });
             }
 
-            console.log('-------http request beign--------\r\n' + this.toString() + '\r\n-------http request end--------');
+            // console.log('-------http request beign--------\r\n' + this.toString() + '\r\n-------http request end--------');
 
 
             connection.write(this.toString());
@@ -51,7 +51,7 @@ ${Object.keys(this.headers).map(key => `${key}:${this.headers[key]}`).join('\r\n
             connection.on('data', (data) => {
                 parser.receive(data.toString());
                 if (parser.isFinished) {
-                    console.log(JSON.stringify(parser.content));
+                    // console.log(JSON.stringify(parser.content));
                     resolve(parser.response);
                     connection.end();
                 }

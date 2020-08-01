@@ -16,18 +16,28 @@ http.createServer((request, response) => {
             `<html maaa=a attB="b">
 <head>
 <style>
-body div #myid{
-width:100px;
-background-color:#ff5000;
+*#container{
+    width:500px;
+    height:300px;
+    display:flex;
+    background-color:rgb(255,255,255)
+}
+#container #myid{
+    width:200px;
+    height:100px;
+    background-color:rgb(255,0,0)
+}
+#container .c1{
+    flex:1;
+    background-color:rgb(0,255,0)
 }
 </style>
 </head>
 <body>
-<div>
-<img id="myld" attr="123"/>
-<img/>
+<div id="container">
+    <div id="myid"/>
+    <div class="c1"/>
 </div>
-<div attr="value">hello world</div>
 </body>
 </html>`);
     })

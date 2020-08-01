@@ -1,7 +1,9 @@
-const { ChunkedBodyParser } = require("./ChunkedBodyParser")
-const { ResponseParser } = require("./ResponseParser")
-const { HttpRequest } = require("./HttpRequest")
-const { parseHTML} = require("./HTMLParser")
+const { ChunkedBodyParser } = require("./ChunkedBodyParser");
+const { ResponseParser } = require("./ResponseParser");
+const { HttpRequest } = require("./HttpRequest");
+const { parseHTML } = require("./HTMLParser");
+const images = require("images");
+const render = require("./render")
 
 void async function () {
     let request = new HttpRequest({
@@ -19,6 +21,13 @@ void async function () {
 
     let response = await request.send();
 
-    parseHTML(response.body);
+    let dom = parseHTML(response.body);
+
+    //绘制图片
+    let viewPort = images(800,600);
+
+    render(viewPort,dom[0]);
+
+    viewPort.save("viewport.jpg");
 }();
 
