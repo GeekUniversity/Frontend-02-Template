@@ -1,0 +1,35 @@
+<html>
+
+<head>
+    <title>Selector Demo</title>
+    <script src="./match.js">    </script>
+    <script src="./cssParser.js">    </script>
+    <script>
+        function isMatch() {
+            console.log(match("div#mydiv1+p#p1", document.getElementById("p1")));
+        }
+    </script>
+
+    <style>
+       div div#mydiv1+p#p1 {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="myDiv1" class="cls1 cls2">
+            <p id="p11">1111111111</p>
+        </div>
+		<p id="p1">1</p>
+		<p id="p2">2</p>
+		<p id="p3">3</p>
+    </div>
+
+    <div class="cls1">
+        <input type="button" value="IsMatch?" onclick="isMatch()" />
+    </div>
+</body>
+
+</html>
