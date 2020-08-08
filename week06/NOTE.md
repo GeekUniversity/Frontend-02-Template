@@ -95,3 +95,13 @@ A complex selector is a sequence of one or more compound selectors <b>separated<
 |*.a|（0,0,1,0）|
 |div.a|（0，0,1,1）|
 |||
+
+#正则表达式
+
+  可以定义标签名可以方便的取得匹配的结果
+
+    let ret = content.match(/^(?<tag>[\w+]+|\*{1,1})?((?<id>\#\s*\w+)|(?<cls>\.\w+)|((?<nms>\|\w+))|(?<pseu>\:{1,2}\w+)|(?<att>\s*\S+\s*(((=)|(\~=)|(\|=)|(\^=)|(\$=)|(\*=))\s*\S+\s*)?))?$/);
+    if (!ret) {
+       return false;
+    }
+    let { tag, id, cls, nms, pseu, att } = ret.groups;
