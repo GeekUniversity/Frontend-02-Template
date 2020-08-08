@@ -1,80 +1,47 @@
 
-function matchSelector(content, element) {
-    if (!content && !element) {
+/*
+* 需要引入attParser.js和complexParser.js，在github上面
+* 支持选择器列表，复杂选择器，复合选择器
+* 命名空间选择器只实现了tagname的比较
+* || 选择器未支持
+*/
+function match(selector, ele) {
+
+    if (!selector || !ele) {
         return false;
     }
 
-    let selectors = [];
-    let firstSelector = null;
-    let secondSelector = null;
-    let selectorType = 0;
+    let selectorList = [];
 
-    //分解复合选择器
-    if (content.match(/^(\w+|\*{1,1})$/)) {
-        selectorType = 0;
-    } else if (content.match(/^(\w+|\*{1,1})?(|\w+){0,1}$/)) {
-        selectorType = 1; //svg|a
-        selectors = content.split("|");
-    }
-    else if (content.match(/^(\w+|\*{1,1})?(\.\w+){0,1}$/)) {
-        selectorType = 1; //class selector
-        selectors = content.split(".");
-    } else if (content.match(/^(\w+|\*{1,1})?(\#\w+){0,1}$/)) {
-        selectorType = 2; //id selector
-        selectors = content.split("#");
-    } else if (content.match(/^(\w+|\*{1,1})?(\:{1,2}\w+){1,1}$/)) {
-        selectorType = 3; //pseudo class
-        selectors = content.split(":");
-    } else if (content.match(/^([a-zA-Z]+|\*{1,1})?(\[\w+\]){1,1}$/)) {
-        selectorType = 4; //Attribute selector
-        selectors = content.split(/[\[\]]/);
-    } else {
-        console.log(content + " not matched");
-        return;
-    }
-
-    firstSelector = (selectors.length === 0 ? content : selectors[0]);
-
-    //元素为空的时候，强制设置成*,方便以后的判断
-    if (firstSelector === null || firstSelector === "") {
-        firstSelector = "*";
-    }
-
-    firstSelector = firstSelector.toUpperCase();
-    secondSelector = (selectors.length > 1 ? selectors[1].toUpperCase() : null);
-
-    //如果第tagname都匹配不上，则直接返回
-    if (firstSelector !== "*" && firstSelector !== element.nodeName) {
+    //1.首先分解selectorList
+    selectorList = selector.split(",");
+    if (selectorList.length <= 0) {
         return false;
     }
 
-    //普通的 div,*
-    if (selectorType === 0) {
-        return true;
-    } else if (selectorType === 1) { // class selector
-        //多类选择器
-        for (let i = 0; i <= element.classList.length; i++) {
-            if (element.classList[i] === secondSelector) {
-                return true;
-            }
-        }
-    } else if (selectorType === 2 && element.attributes.length > 0) { //id 选择器
-        // var attr = element.attributes.getNamedItem("id").value;
-        if (element.id && element.id.toUpperCase() === secondSelector) {
+    //2. 匹配selectorList
+    for (let sel of selectorList) {
+        if (matchComplexSelector(sel, ele)) {
             return true;
         }
-    } else if (secondSelector === 3) { //伪类
-        return true;
-    } else {  //属性，暂不处理
-        return true;
     }
+
     return false;
 }
 
+/*
+* 匹配复杂选择器
+*/
 function matchComplexSelector(complexSelector, element) {
 
-    //将复杂选择器分解为复合选择器
-    let computedCSS = parseCSS(complexSelector, element).reverse();
+    /*
+    * 将复杂选择器分解为带类型的复合选择器,如：div div#mydiv1+p#p1 会分解为：
+    * {"type":"","content":"div"},{"type":"+","content":"div#mydiv1"},{"type":" ","content":"p#p1"}
+    */
+    let computedCSS = complexParser(complexSelector, element).reverse();
+
+    console.log(JSON.stringify(computedCSS));
+
     if (computedCSS.length <= 0) {
         return false;
     }
@@ -85,86 +52,186 @@ function matchComplexSelector(complexSelector, element) {
 
     let ind = 1;
     let currElement = element;
-    let currSelector = computedCSS[0];
 
-    for (let ind = 1; ind < computedCSS.length; ind++) {
-        if (currSelector.type === " ") { // 子代选择器
+    for (ind = 1; ind < computedCSS.length; ind++) {
 
-            //需要遍历所有的父类，看是否可以匹配
+        if (computedCSS[ind].type === " ") {           // 后代
+            let matched = false;
+
+            //后代选择器需要一直向上找
             while (currElement.parentNode) {
                 currElement = currElement.parentNode;
 
+                if (matchSelector(computedCSS[ind].content, currElement)) {
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched) {
+                return false;
+            }
+        } else if (computedCSS[ind].type === ">") {    // 子代
+            if (currElement.parentNode) {
+                currElement = currElement.parentNode;
+                if (!matchSelector(computedCSS[ind].content, currElement)) {
+                    return false;
+                }
+            }
+        } else if (computedCSS[ind].type === "+") {
+            if (currElement.previousElementSibling && matchSelector(computedCSS[ind].content, currElement.previousElementSibling)) {
+                currElement = currElement.previousElementSibling;
+            } else {
+                return false;
+            }
+        } else if (computedCSS[ind].type === "~") {
+
+            let matched = false;
+            while (currElement.previousElementSibling) {
+                currElement = currElement.previousElementSibling;
                 if (matchSelector(computedCSS[ind].content, currElement)) {
                     logEle(currElement);
                     matched = true;
                     break;
                 }
-                else {
-                    matched = false;
-                }
             }
 
-            //只要有一个没有找到就返回false
             if (!matched) {
                 return false;
             }
-        } else if (currSelector.type === ">") {
-
-            //查找直接的父类
-            if (!matchedSelector(computedCSS[ind].content, matchedElement.parent)) {
-                if (matchSelector(computedCSS[ind].content, currElement.nextElementSibling)) {
-                    logEle(currElement);
-                    return true;
-                } else {
-                    currElement = currElement.nextElementSibling;
-                }
-            }
-        } else if (currSelector.type === "+") {
-            if (currElement.previousElementSibling && matchSelector(computedCSS[ind].content, currElement.previousElementSibling)) {
-                logEle(currElement);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (currSelector.type === "~") {
-            while (currElement.previousElementSibling) {
-                currElement = currElement.previousElementSibling;
-                if (matchSelector(computedCSS[ind].content, currElement)) {
-                    logEle(currElement);
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    return matched;
-}
-
-function logEle(element){
-    console.log("matched element: %o",element);
-}
-function match(selector, ele) {
-
-    if (!selector || !ele) {
-        return false;
-    }
-
-    // console.log(ele);
-
-    let selectorList = [];
-
-    //1.首先分解selectorList
-    selectorList = selector.split(",");
-    if (selectorList.length <= 0) {
-        return false;
-    }
-
-    for (let sel of selectorList) {
-        if (matchComplexSelector(sel, ele)) {
+        } else if (computedCSS[ind].type === "|") {
+            //暂不处理命名空间
             return true;
         }
     }
 
+    return true;
+}
+
+/*
+*  匹配复合选择器和简单选择器
+*/
+function matchSelector(content, element) {
+
+    if (!content && !element) {
+        return false;
+    }
+
+    /*
+     * 支持如下形式:
+     * div 或 *
+     * id 选择器 div#id
+     * 类选择器  div.attr
+     * 命名空间  div|ele
+     * 伪类,伪元素 div:attr，div::attr
+     * 属性选择器(支持空格) [attr],div[attr]，div[attr=val]
+     */
+    let ret = content.match(/^(?<tag>[\w+]+|\*{1,1})?((?<id>\#\s*\w+)|(?<cls>\.\w+)|((?<nms>\|\w+))|(?<pseu>\:{1,2}\w+)|(?<att>\s*\S+\s*(((=)|(\~=)|(\|=)|(\^=)|(\$=)|(\*=))\s*\S+\s*)?))?$/);
+    if (!ret) {
+        return false;
+    }
+    let { tag, id, cls, nms, pseu, att } = ret.groups;
+
+    //对于[attr]这种，tag解析出来的是空，所以赋值为*
+    //转成大写是因为nodeName都是大写
+    tag = tag ? tag.toUpperCase() : "*"
+
+    let tagMatched = matchTag(tag,element);
+
+    if (id) {                //id选择器
+        return (tagMatched && matchId(tag, id, element));
+    } else if (cls) {        //class选择器
+        return (tagMatched && matchCls(tag, cls, element));
+    } else if (nms) {        //命名空间
+        return matchNms(tag, nms, element);
+    } else if (pseu) {       //伪类，伪元素
+        return (tagMatched && matchPseu(tag, pseu, element));
+    } else if (att) {        //属性
+        return (tagMatched && matchAttr(tag, att, element));
+    } else {                 //其他直接返回元素比较的结果
+        return tagMatched;
+    }
+}
+
+function matchTag(tag, element) {
+    //如果第tagname都匹配不上，则直接返回false
+    if (tag !== "*" && tag !== element.nodeName) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/*
+ 匹配Id选择器
+*/
+function matchId(tag, id, element) {
+
+    id = (id.charAt(0) === "#" ? id.substring(1) : id);
+
+    return (element.id && element.id.toUpperCase() === id.toUpperCase());
+}
+
+/*
+匹配类选择器
+*/
+function matchCls(tag, cls, element) {
+
+    cls = (cls.charAt(0) === "." ? cls.substring(1) : cls);
+
+    //多类选择器
+    for (let i = 0; i <= element.classList.length; i++) {
+        if (element.classList[i].toUpperCase() === cls.toUpperCase()) {
+            return true;
+        }
+    }
     return false;
 }
+
+/*
+匹配命名空间
+*/
+function matchNms(tag, nms, element) {
+
+    //暂时不比较命名空间
+
+    nms = (nms.charAt(0) === "|" ? nms.substring(1) : nms);
+
+    //比较元素名字
+    return (nms.toUpperCase === element.nodeName.toUpperCase);
+}
+
+/*
+匹配伪类，伪元素，只要元素tagName能匹配就算匹配上
+*/
+function matchPseu(tag, cls, element) {
+
+    //如果第tagname都匹配不上，则直接返回false
+    if (tag !== "*" && tag !== element.nodeName) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/*
+匹配属性
+*/
+function matchAttr(tag, att, element) {
+
+    let attr = attrParser(att);
+
+    if (attr.type === "=") {//匹配[attr=vale]
+        let attrVal = element.attributes.getNamedItem(attr.name);
+        if (attrVal && attrVal.nodeValue.toUpperCase() !== attr.value.toUpperCase()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+function logEle(element) {
+    console.log("matched element: %o", element);
+}
+

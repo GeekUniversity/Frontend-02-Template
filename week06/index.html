@@ -2,32 +2,44 @@
 
 <head>
     <title>Selector Demo</title>
+    <script src="./parser/complexParser.js">    </script>
+    <script src="./parser/attrParser.js">    </script>
     <script src="./match.js">    </script>
-    <script src="./cssParser.js">    </script>
     <script>
         function isMatch() {
-            console.log(match("div#mydiv1+p#p1", document.getElementById("p1")));
+            // console.log(match("div div.cls2~p#p2", document.getElementById("p2")));
+            // console.log(match("a:hover", document.getElementById("a1")));
+            console.log(match("p[id='p11']", document.getElementById("p11")));   
         }
     </script>
 
     <style>
-       div div#mydiv1+p#p1 {
+        div div.cls2~p#p2 {
             background-color: red;
+        }
+
+        a:hover {
+            background-color: yellow;
+        }
+
+        p[id="p11"]{
+            background-color: yellowgreen;
         }
     </style>
 </head>
 
 <body>
     <div id="container">
-        <div id="myDiv1" class="cls1 cls2">
-            <p id="p11">1111111111</p>
+        <div id="mydiv" class="cls1 cls2">
+            <p id="p11">div->div->p</p>
         </div>
-		<p id="p1">1</p>
-		<p id="p2">2</p>
-		<p id="p3">3</p>
+        <p id="p1">p1</p>
+        <p id="p2">p2</p>
+        <p id="p3">p3</p>
+        <a href="www.abc.om" id="a1">链接</a>
     </div>
 
-    <div class="cls1">
+    <div class="btndive">
         <input type="button" value="IsMatch?" onclick="isMatch()" />
     </div>
 </body>
