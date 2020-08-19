@@ -7,7 +7,8 @@ HTML最初源于XML，SGHML，但是HTML5之后慢慢演变成了相对独立的
 https://www.w3.org/TR/2018/SPSD-xhtml1-20180327/DTD/xhtml1-strict.dtd
 https://www.w3.org/1999/xhtml/
 
-- 重要的符號
+- 重要的符号
+
 |符号|说明|
 |----|----|
 |nbsp U+00A0| 空格，合并成一个？多个使用css的whitespace|
@@ -47,20 +48,21 @@ xhtml,MathML,svg
 
 ### HTML解析过程
 <img src="https://www.w3cplus.com/sites/default/files/blogs/2018/1812/cssom-3.png">
-1、HTML的加载
+1、HTML的加载<br>
 　　HTML是一个网页的基础，下载完成后解析<br>
-2、其他静态资源加载
+2、其他静态资源加载<br>
 　　解析HTML时，发现其中有其他外部资源链接比如CSS、JS、图片等，会立即启用别的线程下载。但当外部资源是JS时，HTML的解析会停下来，等JS下载完执行结束后才继续解析HTML，防止JS修改已经完成的解析结果<br>
-3、DOM树构建
+3、DOM树构建<br>
 　　在HTML解析的同时，解析器会把解析完成的结果转换成DOM对象，再进一步构建DOM树<br>
-4、CSSOM树构建
+4、CSSOM树构建<br>
 　　CSS下载完之后对CSS进行解析，解析成CSS对象，然后把CSS对象组装起来，构建CSSOM树<br>
-5、渲染树构建
+5、渲染树构建<br>
 　　当DOM树和CSSOM树都构建完之后，浏览器根据这两个树构建一棵渲染树<br>
-6、布局计算
+6、布局计算<Br>
 　　渲染树构建完成以后，浏览器计算所有元素大小和绝对位置<br>
-7、渲染
-　　布局计算完成后，浏览器在页面渲染元素。经过渲染引擎处理后，整个页面就显示出来<br>
+7、渲染<br>
+　　布局计算完成后，浏览器在页面渲染元素。经过渲染引擎处理后，整个页面就显示出来
+
 ### 基础语法
 #### 全局标签架构
 
@@ -76,6 +78,25 @@ xhtml,MathML,svg
     
     <p>我的第一个段落</p>
 </body>
+</html>
+```
+### 头部
+完整的头部标签：
+``` html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8" />
+        <base href="http://www.runoob.com/images/" target="_link">  <!-- 页面中 所有的链接的默认地址-->
+        <title>头部--HTML基础语法</title>
+        <meta name="keywords" content="PHP学习之路">  <!--  这个是做seo优化的时候用的 -->
+        <meta name="description" content="改变世界的PHP">    <!--  这个是做seo优化的时候用的 -->
+        <meta http-equiv="refresh" content="30">  <!-- 刷新跳转页面 -->
+        <link rel="stylesheet" type="text/css" href="mystyle.csss">  <!-- 引入css样式 -->
+    </head>
+    <body>
+        文档内容......
+    </body>
 </html>
 ```
 
@@ -263,25 +284,6 @@ HTML 文本格式化标签
 </html>
 ```
 
-### 头部
-完整的头部标签：
-``` html
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf8" />
-        <base href="http://www.runoob.com/images/" target="_link">  <!-- 页面中 所有的链接的默认地址-->
-        <title>头部--HTML基础语法</title>
-        <meta name="keywords" content="PHP学习之路">  <!--  这个是做seo优化的时候用的 -->
-        <meta name="description" content="改变世界的PHP">    <!--  这个是做seo优化的时候用的 -->
-        <meta http-equiv="refresh" content="30">  <!-- 刷新跳转页面 -->
-        <link rel="stylesheet" type="text/css" href="mystyle.csss">  <!-- 引入css样式 -->
-    </head>
-    <body>
-        文档内容......
-    </body>
-</html>
-```
 ## 语义标签
 ### 说明
 根据内容的结构化（内容语义化），选择合适的标签（代码语义化）便于开发者阅读和写出更优雅的代码的同时让浏览器的爬虫和机器很好地解析。
