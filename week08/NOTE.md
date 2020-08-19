@@ -2,11 +2,12 @@
 
 ## HTML 基础
 ### HTML的定义
-来与XML，SGHML，H5之后变成了相对独立的语言
+HTML最初源于XML，SGHML，但是HTML5之后慢慢演变成了相对独立的语言
 
 https://www.w3.org/TR/2018/SPSD-xhtml1-20180327/DTD/xhtml1-strict.dtd
 https://www.w3.org/1999/xhtml/
 
+- 重要的符號
 |符号|说明|
 |----|----|
 |nbsp U+00A0| 空格，合并成一个？多个使用css的whitespace|
@@ -31,6 +32,15 @@ https://www.w3.org/1999/xhtml/
 |pre-wrap|	保留空白符序列，但是正常地进行换行。
 |pre-line|	合并空白符序列，但是保留换行符。
 |inherit|	规定应该从父元素继承 white-space 属性的值。
+
+### 合法元素
+- Element：\<tagname>..\</tagname>
+- Text：text
+- Comment：\<!-comments>
+- DocumentType：\<!Doctype html>
+- ProcessingInstruction：<?a 1?>
+- CDATA：\<[CDATA[]]>
+ CDATA 指的是不应由解析器进行解析的文本数据
 
 ### 命名空间
 xhtml,MathML,svg
@@ -121,22 +131,26 @@ HTML 文本格式化标签
 
 ### 链接
 如果在一个 \<a> 标签内包含一个 target 属性，浏览器将会载入和显示用这个标签的 href 属性命名的、名称与这个目标吻合的框架或者窗口中的文档。如果这个指定名称或 id 的框架或者窗口不存在，浏览器将打开一个新的窗口，给这个窗口一个指定的标记，然后将新的文档载入那个窗口。从此以后，超链接文档就可以指向这个新的窗口。
+````html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8" />
+        <title>链接--HTML基础语法</title>
+    </head>
+    <body>
+        <a href="http://www.baidu.com" target="_blank">点击我可以打开百度页面</a> <!--target标签表示在新的标签页打开 -->
+        <a href="http://www.jd.com" target="_blank"><h1>点击跳转京东<h1></a>
+    </body>
+</html>
+````
 
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <meta charset="utf8" />
-            <title>链接--HTML基础语法</title>
-        </head>
-        <body>
-            <a href="http://www.baidu.com" target="_blank">点击我可以打开百度页面</a> <!--target标签表示在新的标签页打开 -->
-            <a href="http://www.jd.com" target="_blank"><h1>点击跳转京东<h1></a>
-        </body>
-    </html>
 ### 图片
 在网页中显示一张图片
 
-    <img src="haha.jpg" title="图片的标题" alt="图片的属性" width="100px" height="100px" />
+````html
+<img src="haha.jpg" title="图片的标题" alt="图片的属性" width="100px" height="100px" />
+````
 
 绝对路径和相对路径
 
@@ -166,20 +180,22 @@ HTML 文本格式化标签
 
 ### 表格
 
-    <table border="1" cellspacing="0" cellpadding="0">
-        <tr>
-            <th>头部一</th>
-            <th>头部二</th>
-        </tr>
-        <tr>
-            <td>第一行，第一列</td>
-            <td>第一行，第二列</td>
-        </tr>
-        <tr>
-            <td>第二行，第一列</td>
-            <td>第二行，第二列</td>
-        </tr>
-    </table>
+````html
+<table border="1" cellspacing="0" cellpadding="0">
+    <tr>
+        <th>头部一</th>
+        <th>头部二</th>
+    </tr>
+    <tr>
+        <td>第一行，第一列</td>
+        <td>第一行，第二列</td>
+    </tr>
+    <tr>
+        <td>第二行，第一列</td>
+        <td>第二行，第二列</td>
+    </tr>
+</table>
+````
 
 ### 区块
 - 块级元素：div是指一块内容的标签，div不显示任何东西，用来包含其他标签，称之为一块内容，需要配合CSS样式来进行页面布局。 h1、p、ul、table都是块级元素，会以新行来开始。
@@ -288,7 +304,7 @@ HTML 文本格式化标签
 
 
 ## 浏览器事件
-### 处理过程（捕获、目标、冒泡）
+### 事件处理过程（捕获、目标、冒泡）
 - 捕获阶段（Capture Phase）<br/>
 事件的第一个阶段是捕获阶段。事件从文档的根节点流向目标对象节点。途中经过各个层次的DOM节点，并在各节点上触发捕获事件，直到到达事件的目标节点。捕获阶段的主要任务是建立传播路径，在冒泡阶段，事件会通过这个路径回溯到文档跟节点。
 
@@ -306,6 +322,37 @@ HTML 文本格式化标签
             }, true)
 
     最后一个参数：布尔值，指定事件是否在捕获或冒泡阶段执行
+
+### addEventListener
+#### 调用形式
+````js
+addEventListener(type, listener [, options]);
+addEventListener(type, listener [, useCapture]);
+````
+#### 参数说明
+- type
+A case-sensitive string representing the event type to listen for<br><b>大小写敏感</b>
+- listener
+````js function eventHandler(event) {
+  if (event.type == 'fullscreenchange') {
+    /* handle a full screen toggle */
+  } else /* fullscreenerror */ {
+    /* handle a full screen toggle error */
+  }
+}
+````
+- options（可选）
+    - capture
+    控制是冒泡还是捕获
+    - once
+    表示事件是否只调用一次，if true，会在调用后自动销毁listener
+    - passive
+    表示是不是会产生副作用（不会调用preventDefault），对于高频操作passive可以提升性能
+    
+- useCapture（可选）<br>
+	可选。布尔值，指定事件是否在捕获或冒泡阶段执行。
+    - true  - 事件句柄在捕获阶段执行
+    - false - 默认。事件句柄在冒泡阶段执行
 
 ### 自定义事件
 ```js
@@ -352,20 +399,71 @@ document.body.blur();
     DocumentType: <!Doctype html>
     ProcessingInstruction: <?a 1?>
 
+### 导航类API
+- parentNode,childNodes,firstChild,lastChild,nextSibling,previousSibling
+- parentElement,children,firstElementChild,lastElementChild,nextElementSibling,previousElementSibling
 firstChild，firstElementChild
+### 修改操作
+- appendChild
+- insertBefore
+- removeChild
+- replaceChild
+### 高级操作
+- compareDocumentPosition
+- contains
+- isEqualNode：DOM树结构相同则相同
+- isSameNode：可以用===代替
+- clondNode
+
 
 ##### 事件：触发和监听事件相关 API。
 
-##### Range：操作文字范围相关 API。
+##### Range API：操作文字范围相关 API。
+- 从问题开始<br>
+  如何把一个元素的所有子元素逆序排列？
+```` js
+function reverse1() {
+    let range = new Range();
+    range.selectNodeContents(document.getElementById("div1"));
+
+    let fragement = range.extractContents();
+    let length = fragement.childNodes.length;
+    
+    for (let ind = length - 1; ind >= 0; ind--) {
+        fragement.appendChild(fragement.childNodes[ind]);
+    }
+    document.getElementById("div1").appendChild(fragement);
+}
+
+function reverse2() {
+
+    let parentEle = document.getElementById("div1");
+
+    let length = parentEle.childNodes.length;
+
+    for (let ind = length - 1; ind >= 0; ind--) {
+        console.log(parentEle.childNodes[ind]);
+        parentEle.appendChild(parentEle.childNodes[ind]);
+    }
+
+    console.log(parentEle);
+}
+```` 
+
 - 定义<br>
 Range 接口表示一个包含节点与文本节点的一部分的文档片段。可以用 Document 对象的 Document.createRange 方法创建 Range，也可以用 Selection 对象的 getRangeAt 方法获取 Range。另外，还可以通过 Document 对象的构造函数 Range() 来得到 Range。
 - 创建<br>
-document.createRange() 方法创建 Range 对象.两个边界点都被设置为文档的开头.<br>
-new Range()
+    - document.createRange() <br>创建 Range 对象.两个边界点都被设置为文档的开头.<br>
+    - new Range()
+    - document.getselection().getrangeat(0)<br>
+      一般只有一个range，所以用getrangeat(0)就可以了
 - 其他方法
-1. Range.setEnd()方法用于设置 Range的结束位置。
-如果结束节点类型是 Text， Comment, or CDATASection之一, 那么 endOffset指的是从结束节点算起字符的偏移量。 对于其他 Node 类型节点， endOffset是指从结束结点开始算起子节点的偏移量（<em>不包括自己</em>）。
-2. 如果设置的结束点在起始点之上（在文档中的位置），将会导致选区折叠，起始点和结束点都会被设置为指定的结束位置。
+
+|方法名|说明|
+|---|---|
+|Range.setEnd()|用于设置 Range的结束位置。<br>(1) 如果结束节点类型是 Text， Comment, or CDATASection之一, 那么 endOffset指的是从结束节点算起字符的偏移量。<br>（2） 对于其他 Node 类型节点， endOffset是指从结束结点开始算起子节点的偏移量（<em>不包括自己</em>）。<br>（3）如果设置的结束点在起始点之上（在文档中的位置），将会导致选区折叠，起始点和结束点都会被设置为指定的结束位置。|
+|range.extractContents()|删除文档内容，并以 DocumentFragment 对象的形式返回它|
+
 
 ##### 遍历<br>
 遍历 DOM 需要的 API。
@@ -478,3 +576,100 @@ scrollIntoView(arg) 滚动元素所在的父元素，使得元素滚动到可见
 var offsetX = document.documentElement.getBoundingClientRect().x - element.getBoundingClientRect().x;
 ```
 ## 其他API
+### 四个标准化组织
+- khronos
+    - WebGL
+- ECMA
+    - ECMAScript
+- WHATWG
+    - HTML
+- W3C
+    - webaudio
+    - CG/WG
+
+#### WhatWG
+##### Compatibility
+- orientation,onorientationchange 桌面端不可用<br>
+    let or1 = window.orientation 返回undefined
+##### Console
+    // Logging
+    assert,clear,debug,error,info,log,table,trace,warn,dir,dirxml
+
+    // Counting
+    count,countReset
+
+    // Grouping
+    group,groupCollapsed,groupEnd
+
+    // Timing
+    time,timeLog,timeEnd
+##### DOM
+- Node
+- Document
+- DocumentType
+- DocumentFragment
+- ShadowRoot
+- Element
+- CharacterData
+- Text
+- CDATASection
+- ProcessingInstruction
+- Comment
+- AbstractRange（非标准）
+- StaticRange（非标准）
+- Range
+- NodeIterator
+- TreeWalker
+- NodeFilter
+- DOMTokenList
+- XPathResult
+- XPathExpression
+- XPathEvaluator
+##### Encoding
+- TextDecoder
+- TextEncoder
+- TextDecoderStream
+- TextEncoderStream
+##### Fetch
+- Headers
+- Request
+- Response
+- Fetch Method
+##### HTML
+
+#### Infra
+
+##### MIME Sniffing
+
+##### Notifications API
+- Notification
+- ServiceWorkerRegistration
+- NotificationEvent
+- ServiceWorkerGlobalScope
+##### Storage
+- StorageManager
+- Navigator
+- Navigator
+##### Streams
+- ReadableStream
+- ReadableStreamDefaultReader
+- ReadableStreamBYOBReader
+- ReadableStreamDefaultController
+- ReadableByteStreamController
+- ReadableStreamBYOBRequest
+- WritableStream
+- WritableStreamDefaultWriter
+- TransformStream
+- TransformStreamDefaultController
+- ByteLengthQueuingStrategy
+- CountQueuingStrategy
+##### URL
+- URL
+- URLSearchParams
+##### XMLHttpRequest
+- XMLHttpRequestEventTarget
+- XMLHttpRequestUpload
+- XMLHttpRequest
+- FormData
+- ProgressEvent
+- 
