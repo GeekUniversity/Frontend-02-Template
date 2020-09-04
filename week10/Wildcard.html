@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildcard</title>
+</head>
+
+<body>
+    <script>
+        function find(source, pattern) {
+            let starCount = 0;
+
+            //先计算*的个数
+            for (let i = 0; i < pattern.length; i++) {
+                if (pattern[i] === "*")
+                    starCount++;
+            }
+
+            //处理没有*的情况，直接用kmp就可以了
+            if (starCount === 0) {
+                for (let i = 0; i < pattern.length; i++) {
+                    if (pattern[i] !== source[i] && pattern[i] !== "?")
+                        return false;
+                }
+                return true;
+            }
+
+            let i = 0;
+            let lastIndex = 0;
+
+            //匹配第一个*前面的内容
+            for (i = 0; pattern[i] !== "*"; i++) {
+                if (pattern[i] !== source[i] && pattern[i] !== "?")
+                    return false;
+            }
+
+            lastIndex = i;
+            
+            for (let p = 0; p < starCount - 1; p++) {
+                
+                i++;
+                let subPattern = "";
+                
+                while (pattern[i] !== "*") {
+                    subPattern += pattern[i];
+                    i++;
+                }
+
+                let reg = new RegExp(subPattern.replace(/\?/g, "[\\s\\S]"), "g");
+                reg.lastIndex = lastIndex;
+                
+                if (!reg.exec(source))
+                    return false;
+
+                lastIndex = reg.lastIndex;
+            }
+
+            //匹配最后面一个星号 *abacdd
+            for (let j = 0; j <= source.length - lastIndex && pattern[pattern.length - j] !== "*"; j++) {
+                if (pattern[pattern.length - j] != source[source.length - j] &&
+                    pattern[pattern.length - j] !== "?")
+                    return false;
+            }
+            return true;
+        }
+
+        find("abc","a*c")
+    </script>
+</body>
+
+</html>
