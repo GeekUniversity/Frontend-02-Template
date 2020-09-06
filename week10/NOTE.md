@@ -76,9 +76,14 @@ console.log(gen.next().value); // undefined
 - 每个节点的所有子节点包含的字符都不相同。
 
 ### KMP
+#### 介绍
+KMP 算法是 D.E.Knuth、J,H,Morris 和 V.R.Pratt 三位神人共同提出的，称之为 Knuth-Morria-Pratt 算法，简称 KMP 算法。该算法相对于 Brute-Force（暴力）算法有比较大的改进，主要是消除了主串指针的回溯，从而使算法效率有了某种程度的提高
+#### 算法介绍
+KMP算法的核心，是一个被称为部分匹配表(Partial Match Table)的数组。PMT中的值是字符串的前缀集合与后缀集合的交集中最长元素的长度。
 
 ### Wildcard
 - 最后一个星号应该尽量匹配多，前面的应该尽量匹配少
 - ? 可以充当任一字符
 - \* 可以作为长度大于等于0的任一字符串
 - ab*cd*abc*a?b
+https://www.jianshu.com/p/b61f91678151
