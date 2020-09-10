@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="container">文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字
+    </div>
+    <div>lkasdjfadksf</div>
+    <div id="dragable" style="display:inline-block;width: 100px;height: 100px;background-color:lightblue;"></div>
+    <script>
+
+        let dragable = document.getElementById("dragable");
+        let container = document.getElementById("container");
+        
+        dragable.addEventListener("mousedown", function (event) {
+
+            let up = (event) => {
+                document.removeEventListener("mousemove", move);
+                document.removeEventListener("mouseup", up);
+                console.log("mouseup");
+            }
+
+            let move = (event) => {
+                
+                let range = getNearest(event.clientX, event.clientY);
+                if (range) {
+                    range.insertNode(dragable);
+                }
+                else {
+                    console.log("out of ")
+                }
+            }
+
+            document.addEventListener("mousemove", move);
+            document.addEventListener("mouseup", up);
+        })
+
+        let ranges = [];
+
+        for (let i = 0; i < container.childNodes[0].textContent.length; i++) {
+            let range = document.createRange();
+            range.setStart(container.childNodes[0], i);
+            range.setEnd(container.childNodes[0], i);
+            ranges.push(range);
+        }
+
+        function getNearest(x, y) {
+
+            let nearest = null;
+            let min = Infinity;
+
+            for (let range of ranges) {
+                let rect = range.getBoundingClientRect();
+                let distance = (rect.x - x) ** 2 + (rect.y - y) ** 2
+                if (distance < min) {
+                    nearest = range;
+                    min = distance;
+                }
+            }
+
+            return nearest;
+        }
+
+        document.addEventListener("selectstart", event => event.preventDefault());
+    </script>
+</body>
+
+</html>

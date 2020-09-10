@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Demo 1</title>
+</head>
+
+<body>
+    <script>
+        let object = {
+            a: 1,
+            b: 2
+        };
+
+        let proxy = new Proxy(object, {
+            set(obj, prop, val) {
+                console.log(obj, prop, val);
+            },
+            set(obj, prop, val) {
+                console.log("prop:" + val);
+                obj[prop] = val;
+            }
+        })
+
+        proxy.revoca
+    </script>
+</body>
+
+</html>
