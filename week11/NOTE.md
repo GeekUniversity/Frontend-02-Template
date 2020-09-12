@@ -1,6 +1,6 @@
 # Proxy 与双向绑定
 - Proxy是强大且危险的设计，用了Proxy的代码会危险且强大，主要为底层库设计
-- Proxy就是的动态代理...
+- Proxy和java里面的动态代理很类似...
 
 ## Proxy 的语法
   let p = new Proxy(target, handler);
@@ -17,9 +17,9 @@ Proxy.revocable(target, handler);
 核心就是对需要跟踪的属性进行注册回调函数，注册完成后通过proxy进行对象访问的过程中就可以通过回调函数进行业务处理
 ~~~~ js
 effect(() => {
-            container.style.backgroundColor = `rgb(${po.r},${po.g},${po.b})`;
-            // console.log("aaaaaa");
-        })
+    container.style.backgroundColor = `rgb(${po.r},${po.g},${po.b})`;
+    // console.log("aaaaaa");
+})
 
 function effect(callback) {
 
