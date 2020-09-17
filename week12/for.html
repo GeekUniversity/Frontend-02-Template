@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let demo = {
+            name: "Clarence_W",
+            age: 25,
+            job: "coder"
+        }
+
+        for (let item in demo) {
+            console.log(item, demo[item]);
+        }
+
+        let arr = [10, 20, 30, 50];
+
+        for(let item in arr){
+            console.log(item);
+        }
+
+        for(let item of arr){
+            console.log(item);
+        }
+
+        // for (let item of demo) {
+        //     console.log(item);
+        // }
+    </script>
+</body>
+
+</html>

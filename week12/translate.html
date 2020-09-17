@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>TranslateX</title>
+    <style>
+        div#container {
+            display: flex;
+            flex-wrap: nowrap;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        div.item {
+            width: 200px;
+            height: 100px;
+            background-color: lightblue;
+            line-height: 100px;
+            text-align: center;
+            transition: ease 0.5s;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div class="item">1</div>
+        <div class="item">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+    </div>
+
+    <script>
+        let container = document.getElementById("container");
+
+        function move() {
+            for (let child of container.children) {
+                let offset = -(child.getBoundingClientRect().x + child.getBoundingClientRect().width);
+                console.log(offset);
+                child.style.transform = `translateX(${offset}px)`;
+            }
+        }
+
+        function reset() {
+            for (let child of container.children) {
+                child.style.transform = "";
+            }
+        }
+    </script>
+</body>
+
+</html>

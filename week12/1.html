@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="div1" class="cls1 cls2" style="color: red;width: 100px;height: 100px;"></div>
+    <a id="a1" href="//m.taobao.com"></a>
+    <input id="input1" value="124">
+    <script>
+        let d = document.getElementById("div1");
+        console.log(d.className)
+        console.log(d.getAttribute("class"));
+
+        d.style["color"] //CSSStyleDeclaration
+        d.getAttribute("sytle") //字符串
+
+        let a = document.getElementById("a1");
+        console.log(a.href); //file://m.taobao.com/
+        console.log(a.getAttribute("href")); ////m.taobao.com
+
+        let i = document.getElementById("input1");
+        i.getAttribute("vallue"); //始终是原来的值
+        i.value; //修改过的值
+    </script>
+</body>
+
+</html>
