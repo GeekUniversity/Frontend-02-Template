@@ -1,4 +1,4 @@
-function createElement(type, attributes, ...children) {
+export function createElement(type, attributes, ...children) {
 
     let element;
 
@@ -22,31 +22,29 @@ function createElement(type, attributes, ...children) {
     return element;
 }
 
-
-
-class Div {
-    constructor() {
-        this.root = document.createElement("div");
+export class Component {
+    constructor(type) {
+        // this.root = this.render();
     }
-    mountTo(parent) {
-        parent.appendChild(this.root)
-    };
-    appendChild(child) {
-        // this.root.appendChild(child);
-        child.mountTo(this.root);
-    };
     setAttribute(name, value) {
         this.root.setAttribute(name, value);
     }
+    appendChild(child) {
+        child.mountTo(this.root);
+    }
+    mountTo(parent) {
+        parent.appendChild(this.root)
+    }
 }
 
-let a = <Div id="a">
-    <span>a</span>
-    <span>b</span>
-    <span>c</span>
-</Div>
+class ElementWrapper {
+    constructor(type) {
+        this.root = document.createElement(type);
+    }
+}
 
-// document.body.appendChild(a);
-
-a.mountTo(document.body)
-
+class TextWrapper extends Component {
+    constructor(text) {
+        this.root = document.createTextNode(text);
+    }
+}

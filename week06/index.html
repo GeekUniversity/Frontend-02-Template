@@ -10,6 +10,8 @@
             // console.log(match("div div.cls2~p#p2", document.getElementById("p2")));
             // console.log(match("a:hover", document.getElementById("a1")));
             console.log(match("p[id='p11']", document.getElementById("p11")));   
+
+            console.log(JSON.stringify(document," "));
         }
     </script>
 
@@ -30,6 +32,9 @@
 
 <body>
     <div id="container">
+
+
+        
         <div id="mydiv" class="cls1 cls2">
             <p id="p11">div->div->p</p>
         </div>

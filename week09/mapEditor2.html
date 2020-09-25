@@ -59,11 +59,20 @@
                 return min;
             }
 
+            find(v) {
+                for (let i = 0; i < this.data.length; i++) {
+                    if (this.data[i][0] === v.x && this.data[i][1] === v.y) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             give(v) {
                 this.data.push(v);
             }
 
-            get length(){
+            get length() {
                 return this.data.length;
             }
         }
@@ -122,59 +131,77 @@
 
             let table = Object.create(maps);
             let queue = new Sorted([start], (a, b) => distance(a) - distance(b));
-            // var queue = [start];
+            let routeMap = [];
 
             container.children[start[1] * 100 + start[0]].style.backgroundColor = "red";
             container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
 
-            function distance(point) {
-                return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
-            }
-
-            async function insert(x, y, pre) {
-                if (x < 0 || x >= 100 || y < 0 || y >= 100)
-                    return;
-
-                if (table[y * 100 + x])
-                    return;
-
-                await sleep(5);
-                container.children[y * 100 + x].style.backgroundColor = "lightgreen";
-
-                table[y * 100 + x] = pre;
-                // console.log("map[" + x + "," + y + "]=" + maps[y * 100 + x]);
-
-                queue.give([x, y]);
-            }
-
             while (queue.length) {
+
                 let [x, y] = queue.take();
-                console.log(x, y);
+
+                routeMap.push([x, y]);
 
                 //已经找到了end节点
                 if (x === end[0] && y === end[1]) {
                     let path = [];
                     while (x != start[0] || y != start[1]) {
-                        path.push(map[y * 100 + x]);
+                        path.push(maps[y * 100 + x]);
                         [x, y] = table[y * 100 + x];
                         container.children[y * 100 + x].style.backgroundColor = "purple";
                     }
                     return path;
+
+                    // for (let ind = 0; ind < routeMap.length; ind++) {
+                    //     container.children[routeMap[ind][1] * 100 + routeMap[ind][0]].style.backgroundColor = "purple";
+                    // }
                 }
 
                 await insert(x - 1, y, [x, y]);
                 await insert(x, y - 1, [x, y]);
                 await insert(x + 1, y, [x, y]);
                 await insert(x, y + 1, [x, y]);
-
                 await insert(x - 1, y - 1, [x, y]);
                 await insert(x + 1, y - 1, [x, y]);
                 await insert(x - 1, y + 1, [x, y]);
                 await insert(x + 1, y + 1, [x, y]);
-
             }
 
             return false;
+
+            function distance(point) {
+                return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
+            }
+
+            function distance2(startPt, endPt) {
+                return Math.sqrt((startPt[0] - endPt[0]) ** 2 + (startPt[1] - endPt[1]) ** 2);
+            }
+
+            async function insert(x, y, pre) {
+
+                if (x < 0 || x >= 100 || y < 0 || y >= 100)
+                    return;
+
+                if (table[y * 100 + x]) {
+                    if (table[y * 100 + x] != 1 && table[y * 100 + x] != 0) {
+
+                        if (queue.find([x, y])) {
+                            if (distance2(pre, [x, y]) + distance2(pre,start) < distance2([x,y],start)) {
+                                table[y * 100 + x] = pre;
+                                return;
+                            }
+                        }
+                    }
+                    return;
+                }
+
+                await sleep(5);
+                container.children[y * 100 + x].style.backgroundColor = "lightgreen";
+
+                table[y * 100 + x] = pre;
+
+                queue.give([x, y]);
+            }
         }
 
         initializeMap();

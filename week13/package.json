@@ -1,20 +1,19 @@
 {
-  "name": "jsx",
+  "name": "week13",
   "version": "1.0.0",
-  "description": "",
+  "description": "Carousel",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server",
-    "build": "webpack --watch --display-modules --progress --color"
+    "start": "webpack-dev-server"
   },
-  "author": "",
+  "author": "yangjie",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
     "babel-loader": "^8.1.0",
-    "webpack": "^4.44.1",
+    "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
   },

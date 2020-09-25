@@ -80,15 +80,17 @@ Created,mount,unmount,js change/set,user input,render/update,destroyed
 ### JSX的定义
 JSX是一种JavaScript的语法扩展，运用于React架构中，其格式比较像是模版语言，但事实上完全是在JavaScript内部实现的。元素是构成React应用的最小单位，JSX就是用来声明React当中的元素，React使用JSX来描述用户界面。
 ### 语法
-const element = <h1>Hello, world!</h1>;
+const element = \<h1\>Hello, world!\<\/h1\>;
 - 元素是构成 React 应用的最小单位，JSX 就是用来声明 React 当中的元素
 - 在JSX中插入JavaScript表达式十分简单，直接在JSX中将JS表达式用大括号括起来即可
 ### vscode中使用jsx的方式
-- 1.npm init 
-- 2.npm install -g webpack webpack-cli
-- 3.npm install --save-dev webpack babel-loader
-- 4.创建webpack.config.js
-- 5.npm install --save-dev @babel/core @babel/preset-env
-- 6.npm install @babel/plugin-transform-react-jsx
-- 7. npm install webpack-dev-server --save-dev 
-- 9. npm install webpack-cli --save-dev 
+#### 1.npm init 
+- 在node开发中使用npm init会生成一个pakeage.json文件，这个文件主要是用来记录这个项目的详细信息的，它会将我们在项目开发中所要用到的包，以及项目的详细信息等记录在这个项目中。方便在以后的版本迭代和项目移植的时候会更加的方便.
+- 使用npm init初始化项目还有一个好处就是在进行项目传递的时候不需要将项目依赖包一起发送给对方，对方在接受到你的项目之后再执行npm install就可以将项目依赖全部下载到项目里
+#### 2.npm install -g webpack webpack-cli
+#### 3.npm install --save-dev webpack babel-loader
+#### 4.创建webpack.config.js
+#### 5.npm install --save-dev @babel/core @babel/preset-env
+#### 6.npm install @babel/plugin-transform-react-jsx
+#### 7. npm install webpack-dev-server --save-dev 
+#### 9. npm install webpack-cli --save-dev 
