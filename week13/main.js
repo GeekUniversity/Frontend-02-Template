@@ -13,4 +13,3 @@ a.mountTo(document.body);
 
 let t1 = new Timeline();
 t1.add(new Animation({ set a(v) { console.log(v) } }, "a", 0, 100, 1000, null));
-t1.start();

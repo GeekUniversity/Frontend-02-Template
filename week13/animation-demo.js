@@ -24,4 +24,3 @@ document.getElementById("resume").addEventListener("click",()=>{
 
 // function onPause(){
 //     t1.pause();
-// }
