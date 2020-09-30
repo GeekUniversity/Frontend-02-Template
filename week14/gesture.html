@@ -1,0 +1,25 @@
+<!-- <!DOCTYPE html> -->
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手势</title>
+</head>
+
+<body oncontextmenu="self.event.returnvalue=false">
+    <script type="module">
+        import { enableGesture } from "./gesture.js"
+        
+        document.oncontextmenu = new Function("event.returnValue=false;"); //禁止右键bai功能,单击右键将无任何du反应zhi
+        document.onselectstart = new Function("event.returnValue=false;"); //禁止先择,也就是无法dao复制
+        enableGesture(document.documentElement);
+    </script>
+
+    <!-- <script language="JavaScript">
+        document.oncontextmenu = new Function("event.returnValue=false;"); //禁止右键bai功能,单击右键将无任何du反应zhi
+        document.onselectstart = new Function("event.returnValue=false;"); //禁止先择,也就是无法dao复制
+    </script> -->
+</body>
+
+</html>
