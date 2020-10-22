@@ -15,16 +15,19 @@
         };
 
         let proxy = new Proxy(object, {
-            set(obj, prop, val) {
-                console.log(obj, prop, val);
+            get(obj, prop) {
+                console.log("get by proxy");
+                return obj[prop];
             },
             set(obj, prop, val) {
-                console.log("prop:" + val);
+                console.log("set by proxy,old value:[" + obj[prop] + "] new value:[" + val + "]");
                 obj[prop] = val;
+                return obj[prop];
             }
-        })
+        });
 
-        proxy.revoca
+        proxy.a = "123";
+
     </script>
 </body>
 

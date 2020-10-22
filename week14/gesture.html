@@ -12,8 +12,8 @@
         import { enableGesture } from "./gesture.js"
 
         document.oncontextmenu = new Function("event.returnValue=false;");
-
         document.onselectstart = new Function("event.returnValue=false;");
+        
         enableGesture(document.documentElement);
     </script>
 </body>
