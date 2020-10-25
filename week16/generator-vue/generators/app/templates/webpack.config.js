@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: './src/main.js',
@@ -18,6 +18,11 @@ module.exports = {
         }]
     },
     plugins: [
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new CopyPlugin({
+            patterns: [
+                { from: 'src/*.html', to: '[name].[ext]' },
+            ]
+        })
     ]
 };

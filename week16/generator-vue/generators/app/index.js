@@ -50,7 +50,7 @@ module.exports = class extends Generator {
         this.fs.extendJSON(this.destinationPath('package.json'), pkgJson);
         this.npmInstall(["vue"], { 'save-dev': false });
         this.npmInstall(["vue-loader"], { 'save-dev': true });
-        this.npmInstall(["webpack"], { 'save-dev': true });
+        this.npmInstall(["webpack","vue-style-loader","css-loader","vue-template-compiler","copy-webpack-plugin"], { 'save-dev': true });
     }
 
     copyFiles() {
