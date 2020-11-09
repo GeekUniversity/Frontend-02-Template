@@ -46,8 +46,17 @@ event：data
 .write
 .end
 
+### pipe
+
+
 ### OAuth2.0的认证流程
 - publish-tool 负责请求access_code 
+~~~js
+//windows 上是start命令
+child_process.exec(`start https://github.com/login/oauth/authorize?client_id=Iv1.1ba97bf0d0f6eb1d`, (err, stdout, stderr) => {
+    console.log("error");
+});
+~~~
 - publish-server 接受回调换取token，并把token返回给publish-tool
 - publish-tool 根据token进行系统发布
 - publish-server 负责权限的校验
