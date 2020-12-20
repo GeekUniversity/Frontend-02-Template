@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AST</title>
+</head>
+
+<body>
+    <script>
+
+        let multiplyExp = Symbol("MultiplicativeExpression");
+        let addExp = Symbol("AdditiveExpression");
+
+        let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+        let dictionary = ["Number", "Whitespace", "LineTerminator", "*", "/", "+", "-"];
+
+        function* tokenize(source) {
+            let result = null;
+            let lastIndex = 0;
+
+            while (true) {
+
+                lastIndex = regexp.lastIndex;
+                result = regexp.exec(source);
+                if (!result) break;
+
+                if (regexp.lastIndex - lastIndex > result[0].length)
+                    break;
+
+                let token = {
+                    type: null,
+                    value: null
+                };
+
+                for (let i = 1; i <= dictionary.length; i++) {
+                    if (result[i]) {
+                        token.type = dictionary[i - 1];
+                    }
+                }
+
+                token.value = result[0];
+                yield token;
+            }
+
+            yield {
+                type: "EOF"
+            }
+        }
+
+        let source = [];
+        for (let token of tokenize("1+2*5+3")) {
+            if (token.type !== "Whitespace" && token.type !== "LineTerminator") {
+                source.push(token);
+            }
+        }
+
+        function Expression(tokens) {
+            if (source[0].type === addExp && source[1] && source[1].type === "EOF") {
+                let node = {
+                    type: "Expression",
+                    children: [source.shift(), source.shift()]
+                }
+                source.unshift(node);
+                return node;
+            }
+
+            AdditiveExpression(source);
+            return Expression(source);
+        }
+
+        function AdditiveExpression(source) {
+            if (source[0].type === multiplyExp) {
+                let node = {
+                    type: addExp,
+                    children: [source[0]]
+                }
+                source[0] = node;
+                return AdditiveExpression(source);
+            } else if (source[0].type === addExp && source[1] && (source[1].type === "+" || source[1].type === "-")) {
+                let node = {
+                    type: addExp,
+                    operator: source[1].type,
+                    children: []
+                }
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+                MultiplicativeExpression(source);
+                node.children.push(source.shift());
+                source.unshift(node);
+                return AdditiveExpression(source);
+            } else if (source[0].type === addExp) {
+                return source[0];
+            }
+
+            MultiplicativeExpression(source);
+
+            return AdditiveExpression(source);
+        }
+
+        function MultiplicativeExpression(source) {
+
+            if (source[0].type === "Number") {
+                let node = {
+                    type: multiplyExp,
+                    children: [source[0]]
+                }
+                source[0] = node;
+                return MultiplicativeExpression(source);
+
+            } else if (source[0].type === multiplyExp && source[1] && (source[1].type === "*" || source[1].type === "/")) {
+
+                let node = {
+                    type: multiplyExp,
+                    operator: source[1].type,
+                    children: []
+                }
+
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+                source.unshift(node);
+
+                return MultiplicativeExpression(source);
+            }
+
+            if (source[0].type === multiplyExp)
+                return source[0];
+
+            return MultiplicativeExpression(source);
+        }
+
+        Expression(source);
+
+        console.log(source)
+
+    </script>
+</body>
+
+</html>

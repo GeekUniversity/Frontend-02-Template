@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图</title>
+    <style>
+        .cell {
+            /* display: inline-block; */
+            line-height: 7px;
+            width: 6px;
+            height: 6px;
+            background-color: gray;
+            border-bottom: solid 1px white;
+            border-right: solid 1px white;
+            vertical-align: middle;
+            float: left;
+        }
+
+        #container {
+            width: 701px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div>
+        <button onclick="localStorage['map'] = JSON.stringify(map)">save</button>
+        <button onclick="localStorage.clear();">clear</button>
+    </div>
+    <script>
+
+        class Sorted {
+            constructor(data, compare) {
+                this.data = data.slice();
+                this.compare = compare || ((a, b) => a - b);
+            }
+
+            take() {
+
+                if (!this.data.length)
+                    return;
+
+                let min = this.data[0];
+                let minIndex = 0;
+
+                for (let i = 0; i < this.data.length; i++) {
+                    if (this.compare(this.data[i], min) < 0) {
+                        min = this.data[i];
+                        minIndex = i;
+                    }
+                }
+
+                this.data[minIndex] = this.data[this.data.length - 1];
+                this.data.pop();
+                return min;
+            }
+
+            find(v) {
+                for (let i = 0; i < this.data.length; i++) {
+                    if (this.data[i][0] === v.x && this.data[i][1] === v.y) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            give(v) {
+                this.data.push(v);
+            }
+
+            get length() {
+                return this.data.length;
+            }
+        }
+
+        let map = localStorage["map"] ? JSON.parse(localStorage["map"]) : Array(10000).fill(0);
+        let container = document.getElementById("container");
+
+        function sleep(timeout) {
+            return new Promise(function (resovle, reject) {
+                setTimeout(resovle, timeout);
+            });
+        }
+
+        function initializeMap() {
+
+            for (let y = 0; y < 100; y++) {
+                for (let x = 0; x < 100; x++) {
+
+                    let cell = document.createElement("div");
+                    cell.classList.add("cell");
+
+                    if (map[100 * y + x] === 1) {
+                        cell.style.backgroundColor = "black";
+                    }
+
+                    cell.addEventListener("mousemove", () => {
+                        if (mouseDown) {
+                            if (clear) {
+                                cell.style.backgroundColor = "";
+                                map[100 * y + x] = 0;
+                            } else {
+                                cell.style.backgroundColor = "black";
+                                map[100 * y + x] = 1;
+                            }
+                        }
+                    })
+
+                    container.appendChild(cell);
+                }
+            }
+
+            let mouseDown = false;
+            let clear = false;
+
+            document.addEventListener("mousedown", e => {
+                mouseDown = true;
+                clear = (e.which === 3)
+            });
+
+            document.addEventListener("mouseup", () => mouseDown = false);
+            document.addEventListener("contextmenu", e => e.preventDefault());
+        }
+
+
+        async function searchPath(maps, start, end) {
+
+            let table = Object.create(maps);
+            let queue = new Sorted([start], (a, b) => distance(a) - distance(b));
+            let routeMap = [];
+
+            container.children[start[1] * 100 + start[0]].style.backgroundColor = "red";
+            container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";
+
+            while (queue.length) {
+
+                let [x, y] = queue.take();
+
+                routeMap.push([x, y]);
+
+                //已经找到了end节点
+                if (x === end[0] && y === end[1]) {
+                    let path = [];
+                    while (x != start[0] || y != start[1]) {
+                        path.push(maps[y * 100 + x]);
+                        [x, y] = table[y * 100 + x];
+                        container.children[y * 100 + x].style.backgroundColor = "purple";
+                    }
+                    return path;
+
+                    // for (let ind = 0; ind < routeMap.length; ind++) {
+                    //     container.children[routeMap[ind][1] * 100 + routeMap[ind][0]].style.backgroundColor = "purple";
+                    // }
+                }
+
+                await insert(x - 1, y, [x, y]);
+                await insert(x, y - 1, [x, y]);
+                await insert(x + 1, y, [x, y]);
+                await insert(x, y + 1, [x, y]);
+                await insert(x - 1, y - 1, [x, y]);
+                await insert(x + 1, y - 1, [x, y]);
+                await insert(x - 1, y + 1, [x, y]);
+                await insert(x + 1, y + 1, [x, y]);
+            }
+
+            return false;
+
+            function distance(point) {
+                return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
+            }
+
+            function distance2(startPt, endPt) {
+                return Math.sqrt((startPt[0] - endPt[0]) ** 2 + (startPt[1] - endPt[1]) ** 2);
+            }
+
+            async function insert(x, y, pre) {
+
+                if (x < 0 || x >= 100 || y < 0 || y >= 100)
+                    return;
+
+                if (table[y * 100 + x]) {
+                    if (table[y * 100 + x] != 1 && table[y * 100 + x] != 0) {
+
+                        if (queue.find([x, y])) {
+                            if (distance2(pre, [x, y]) + distance2(pre,start) < distance2([x,y],start)) {
+                                table[y * 100 + x] = pre;
+                                return;
+                            }
+                        }
+                    }
+                    return;
+                }
+
+                await sleep(5);
+                container.children[y * 100 + x].style.backgroundColor = "lightgreen";
+
+                table[y * 100 + x] = pre;
+
+                queue.give([x, y]);
+            }
+        }
+
+        initializeMap();
+    </script>
+</body>
+
+</html>

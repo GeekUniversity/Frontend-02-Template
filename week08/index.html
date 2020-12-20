@@ -1,0 +1,74 @@
+<html>
+
+<head>
+    <style>
+        p {
+            word-wrap: break-word;
+            word-break: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <p id="p1">1111111<em>11111</em>11111</p>
+
+    <p id="p2">222222222222<em>11111</em>11111</p>
+
+
+    <input type="button" value="Clieckme" onclick="btnclicked();">
+
+    <script>
+        function btnclicked() {
+
+            // console.log("click");
+
+            const sel = document.getSelection();
+            const range = sel.getRangeAt(0);
+
+            console.log(range.extractContents());
+        }
+
+        // var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, null, false)
+        // var node;
+        // while (node = walker.nextNode()) {
+        //     if (node.tagName === "p")
+        //         node.nextSibling();
+        //     console.log(node);
+        // }
+
+        // var iframe = document.createElement("iframe");
+
+        // document.body.appendChild(iframe);
+
+        // iframe.src = "https://www.w3.org/TR/2019/WD-css-lists-3-20190425/"
+
+        // function happen(element, type) {
+        //     return new Promise(resolve => {
+        //         element.addEventListener(type, resolve, { once: true })
+        //     })
+        // }
+
+        // happen(iframe, "load").then(function () {
+        //     //Array.prototype.map.call(document.querySelectorAll("#container li[data-tag~=css] h2"), e=> e.children[0].href + " |\t" + e.children[0].textContent).join("\n")
+        //     console.log(iframe.contentWindow);
+        // })
+
+        // async function start() {
+        //     var output = []
+        //     for (let standard of Array.prototype.slice.call(document.querySelectorAll("#container li[data-tag~=css] h2:not(.Retired):not(.GroupNote)"))) {
+        //         console.log(standard.children[0].href);
+        //         iframe.src = standard.children[0].href;
+        //         await happen(iframe, "load");
+        //         var properties = Array.prototype.map.call(iframe.contentWindow.document.querySelectorAll(".propdef [data-dfn-type=property]"), e => e.childNodes[0].textContent);
+        //         if (properties.length)
+        //             output.push(standard.children[0].textContent + " | " + properties.join(", "));
+        //     }
+        //     console.log(output.join("\n"))
+        // }
+
+        // start();
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图</title>
+    <style>
+        .cell {
+            /* display: inline-block; */
+            line-height: 7px;
+            width: 6px;
+            height: 6px;
+            background-color: gray;
+            border-bottom: solid 1px white;
+            border-right: solid 1px white;
+            vertical-align: middle;
+            float: left;
+        }
+
+        #container {
+            width: 701px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div>
+        <button onclick="localStorage['map'] = JSON.stringify(map)">save</button>
+        <button onclick="localStorage.clear();">clear</button>
+    </div>
+    <script>
+
+        let map = localStorage["map"] ? JSON.parse(localStorage["map"]) : Array(10000).fill(0);
+        let container = document.getElementById("container");
+
+        function sleep(timeout) {
+            return new Promise(function(resovle, reject){
+                setTimeout(resovle, timeout);
+            });
+        }
+
+        function initializeMap() {
+
+            for (let y = 0; y < 100; y++) {
+                for (let x = 0; x < 100; x++) {
+
+                    let cell = document.createElement("div");
+                    cell.classList.add("cell");
+
+                    if (map[100 * y + x] === 1) {
+                        cell.style.backgroundColor = "black";
+                    }
+
+                    cell.addEventListener("mousemove", () => {
+                        if (mouseDown) {
+                            if (clear) {
+                                cell.style.backgroundColor = "";
+                                map[100 * y + x] = 0;
+                            } else {
+                                cell.style.backgroundColor = "black";
+                                map[100 * y + x] = 1;
+                            }
+                        }
+                    })
+
+                    container.appendChild(cell);
+                }
+            }
+
+            let mouseDown = false;
+            let clear = false;
+
+            document.addEventListener("mousedown", e => {
+                mouseDown = true;
+                clear = (e.which === 3)
+            });
+
+            document.addEventListener("mouseup", () => mouseDown = false);
+            document.addEventListener("contextmenu", e => e.preventDefault());
+        }
+
+        async function searchPath(map, start, end) {
+
+            var queue = [start];
+
+            container.children[start[0] * 100 + start[1]].style.backgroundColor = "red";
+            container.children[end[0] * 100 + end[1]].style.backgroundColor = "red";
+
+            async function insert(x, y) {
+                if (x < 0 || x >= 100 || y < 0 || y >= 100)
+                    return;
+
+                if (map[y * 100 + x])
+                    return;
+                    
+                await sleep(30);
+                container.children[y * 100 + x].style.backgroundColor = "lightgreen";
+
+                map[y * 100 + x] = 2;
+                queue.push([x, y]);
+            }
+
+            while (queue.length) {
+                let [x, y] = queue.shift();
+                console.log(x, y);
+
+                //已经找到了end节点
+                if (x === end[0] && y === end[1]) {
+				// debugger;
+                    return false;
+                }
+
+                await insert(x - 1, y);
+                await insert(x, y - 1);
+                await insert(x + 1, y);
+                await insert(x, y + 1);
+            }
+
+            return false;
+        }
+
+        initializeMap();
+    </script>
+</body>
+
+</html>

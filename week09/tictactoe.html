@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicTacToe</title>
+
+    <style>
+        div#board {
+            display: grid;
+            grid-template-rows: repeat(3, 150px);
+            grid-template-columns: repeat(3, 150px);
+            grid-gap: 2px;
+        }
+
+        div.cell {
+            background-color: lightblue;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 150px;
+            font-size: 50px;
+        }
+
+        #trace {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="board"></div>
+
+    <div id="trace">
+        <input type="button" value="reset" onclick="reset();">
+    </div>
+
+    <div>
+        <textarea id="log" style="width: 450px;height: 200px;"></textarea>
+    </div>
+    <script>
+        let pattern = [
+            [0, 2, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ];
+
+        let currUsr = 1;
+        let gameOver = false;
+
+        function reset() {
+            for (let i = 0; i < 3; i++)
+                for (let j = 0; j < 3; j++) {
+                    pattern[i][j] = 0;
+                }
+
+            currUsr = 1;
+            gameOver = false;
+
+            document.getElementById("log").innerHTML = "please click the cell to start the game!";
+            show();
+        }
+
+        function show() {
+            let board = document.getElementById("board");
+
+            board.innerHTML = "";
+
+            for (let i = 0; i < 3; i++) {
+
+                for (let j = 0; j < 3; j++) {
+                    let cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    cell.addEventListener("click", () => { move(i, j) })
+                    cell.innerHTML = (pattern[i][j] === 2 ? "O" : (pattern[i][j] === 1 ? "X" : ""))
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function move(i, j) {
+
+            if (gameOver || pattern[i][j] !== 0) {
+                return;
+            }
+
+            pattern[i][j] = currUsr;
+
+            appendLog(getUserPrefix(currUsr) + " move to " + i + "," + j);
+
+            if (checkWin(pattern, currUsr)) {
+                appendLog(getUserPrefix(currUsr) + " win! game over");
+                gameOver = true;
+            }
+            else {
+                currUsr = switchUser(currUsr);
+
+                let choice = bestChoice(pattern, currUsr);
+                if (choice.result === 1) {
+                    appendLog(getUserPrefix(currUsr) + " best choice is:" + JSON.stringify(choice.point) + " you will win");
+                } else if (choice.result === -1) {
+                    appendLog(getUserPrefix(currUsr) + " you maybe lose!")
+                } else {
+                    appendLog(getUserPrefix(currUsr) + " best choice is:" + JSON.stringify(choice.point) + " you will get peace");
+                } 5
+            }
+
+            show();
+        }
+
+        function getUserPrefix(usr) {
+            return "user [" + (currUsr === 1 ? "X" : "O") + "]";
+        }
+
+        function switchUser(usr) {
+            return 3 - usr;
+        }
+
+        function checkWin(arr, user) {
+            {
+                //行
+                let win = true;
+                for (let row = 0; row < 3; row++) {
+                    win = true;
+
+                    for (let col = 0; col < 3; col++) {
+                        if (arr[row][col] != user) {
+                            win = false;
+                        }
+                    }
+                    if (win)
+                        return true;
+                }
+            }
+
+            {
+                //列
+                let win = true;
+                for (let col = 0; col < 3; col++) {
+                    win = true;
+                    for (let row = 0; row < 3; row++) {
+                        if (arr[row][col] != user) {
+                            win = false;
+                        }
+                    }
+
+                    if (win)
+                        return true;
+                }
+            }
+
+            {
+                //交叉轴
+                let win = true;
+                for (let i = 0; i < 3; i++) {
+                    if (arr[i][i] != user) {
+                        win = false;
+                    }
+                }
+                if (win) return true;
+
+                win = true;
+                for (let i = 0; i < 3; i++) {
+                    if (arr[2 - i][i] != user) {
+                        win = false;
+                    }
+                }
+                if (win) return true;
+            }
+            return false;
+        }
+
+        function clone(arr) {
+            return JSON.parse(JSON.stringify(arr));
+        }
+
+        function checkWillWin(arr, user) {
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+
+                    // let tmp = Object.create(JSON.parse(JSON.stringify(arr)));
+                    let tmp = clone(arr);
+
+                    if (tmp[i][j]) {
+                        continue;
+                    }
+
+                    tmp[i][j] = user;
+                    if (checkWin(tmp, user)) {
+                        return { i, j };
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        function bestChoice(arr, user) {
+
+            let p;
+
+            if (p = checkWillWin(arr, user)) {
+                return {
+                    point: p,
+                    result: 1
+                };
+            }
+
+            let result = -2;
+            let point = null;
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+
+                    if (arr[i][j]) {
+                        continue;
+                    }
+
+                    let tmp = clone(arr);
+                    tmp[i][j] = user;
+
+                    let r = bestChoice(tmp, switchUser(user)).result;
+
+                    if (-r > result) {
+                        result = -r;
+                        point = { i, j };
+                    }
+                }
+            }
+
+            return {
+                point: point,
+                result: point ? result : 0
+            }
+        }
+
+        function appendLog(log) {
+            document.getElementById("log").innerHTML = log + "\r\n" + document.getElementById("log").innerHTML;
+        }
+
+        reset();
+
+        // console.log(bestChoice(pattern,currUsr));
+    </script>
+</body>
+
+</html>
